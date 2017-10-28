@@ -11,14 +11,20 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 
 public class MainActivity extends AppCompatActivity {
 
-    static EditText editText;
+    public EditText editText;
 
-    public static void ChangeEditText(String s) {
-        editText.setText(s);
+    private void changeText(final EditText editText,final String value){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+               editText.setText((value));
+            }
+        });
     }
 
     private boolean isConnectedtoInternet(Context context) {
@@ -50,21 +56,40 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Log.d("E", "#fares in background");
-            try {
-                Log.d("E", "#fares Creating socket");
-                String s = null;
-                while (s == null) {
-                    ServerSocket myserversocket = new ServerSocket(0);
-                    Log.d("E", "#fares Created socket");
 
-                    s = String.valueOf(myserversocket.getLocalPort()) ;
-                    myserversocket.close();
-                }
-                MainActivity.ChangeEditText(s);
+            try {
+
+
+                        Log.d("E", "#fares Creating socket");
+
+                        String s = null;
+                        while (s == null) {
+                            Log.d("E","in while loop");
+                            ServerSocket myserversocket = null;
+                            try {
+                                myserversocket = new ServerSocket(0);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            Log.d("E", "#fares Created socket");
+
+                            s = String.valueOf(myserversocket.getLocalPort());
+                            MainActivity.this.changeText(MainActivity.this.editText,s);
+                            try {
+                                myserversocket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+
+
 
             } catch (Exception e) {
-                Log.d("E", e.getStackTrace().toString());
+                Log.d("E", e.getMessage());
+
+                Log.d("E", "doinbackground exception");
             }
             return null;
         }
