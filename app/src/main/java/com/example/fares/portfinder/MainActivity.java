@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("E", "#fares Created socket");
 
                 String s = String.valueOf(myserversocket.getLocalPort());
+                myserversocket.close();
                 MainActivity.ChangeEditText(s);
                 Log.d("E", "Port = " + strings[0]);
             } catch (Exception e) {
