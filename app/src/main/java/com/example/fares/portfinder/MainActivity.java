@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                     ServerSocket myserversocket = new ServerSocket(0);
                     Log.d("E", "#fares Created socket");
 
-                    s = String.valueOf(myserversocket.getLocalPort());
+                    s = String.valueOf(myserversocket.getLocalPort()) ;
                     myserversocket.close();
                 }
                 MainActivity.ChangeEditText(s);
