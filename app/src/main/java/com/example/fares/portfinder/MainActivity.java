@@ -17,34 +17,10 @@ public class MainActivity extends AppCompatActivity {
 
     static EditText editText;
 
-    public static void ChangeEditText(String s){
+    public static void ChangeEditText(String s) {
         editText.setText(s);
     }
 
-
-    class MySocket extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Log.d("E", "#fares in background");
-            try {
-                Log.d("E", "#fares Creating socket");
-                ServerSocket myserversocket = new ServerSocket(0);
-                Log.d("E", "#fares Created socket");
-
-                String s = new String (String.valueOf(myserversocket.getLocalPort()));
-                myserversocket.close();
-                MainActivity.ChangeEditText(s);
-
-            } catch (Exception e) {
-                Log.d("E", e.getStackTrace().toString());
-            }
-            return null;
-        }
-
-
-    }
     private boolean isConnectedtoInternet(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -54,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     public void FindPort(View v) {
         if (isConnectedtoInternet(MainActivity.this)) {
             editText = (EditText) findViewById(R.id.editText);
-            
+
             MySocket mysocket = new MySocket();
             mysocket.execute();
 
@@ -67,6 +43,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    class MySocket extends AsyncTask<Void, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.d("E", "#fares in background");
+            try {
+                Log.d("E", "#fares Creating socket");
+                String s = null;
+                while (s == null) {
+                    ServerSocket myserversocket = new ServerSocket(0);
+                    Log.d("E", "#fares Created socket");
+
+                    s = String.valueOf(myserversocket.getLocalPort());
+                    myserversocket.close();
+                }
+                MainActivity.ChangeEditText(s);
+
+            } catch (Exception e) {
+                Log.d("E", e.getStackTrace().toString());
+            }
+            return null;
+        }
+
+
     }
 }
 
