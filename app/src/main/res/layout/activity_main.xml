@@ -19,6 +19,7 @@
         android:inputType="none"
         android:layout_row="0"
         android:ems="10"
+        android:maxLength="20"
         android:layout_gravity="center"
         android:gravity="center"
         android:text="Available Port" />
