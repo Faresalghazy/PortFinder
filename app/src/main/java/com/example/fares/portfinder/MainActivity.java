@@ -6,23 +6,43 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     public EditText editText;
+    private ArrayList<String> ports = new ArrayList<>();
+    private ListView listView;
+    private ListAdapter adapter;
 
-    private void changeText(final EditText editText,final String value){
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        listView = (ListView) findViewById(R.id.list_view);
+        adapter = new PortListAdapter(MainActivity.this, ports);
+
+    }
+
+    private void updateListView(final String value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-               editText.setText((value));
+                if (!TextUtils.isEmpty(value)) {
+                    ports.add(0, value);
+                    listView.setAdapter(adapter);
+                }
             }
         });
     }
@@ -35,20 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void FindPort(View v) {
         if (isConnectedtoInternet(MainActivity.this)) {
-            editText = (EditText) findViewById(R.id.editText);
-
             MySocket mysocket = new MySocket();
             mysocket.execute();
-
         } else {
             Toast.makeText(MainActivity.this, "Not connected to internet", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
     }
 
     class MySocket extends AsyncTask<Void, Void, Void> {
@@ -59,31 +70,27 @@ public class MainActivity extends AppCompatActivity {
 
             try {
 
+                Log.d("E", "#fares Creating socket");
 
-                        Log.d("E", "#fares Creating socket");
+                String s = null;
+                while (s == null) {
+                    Log.d("E", "in while loop");
+                    ServerSocket myserversocket = null;
+                    try {
+                        myserversocket = new ServerSocket(0);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("E", "#fares Created socket");
 
-                        String s = null;
-                        while (s == null) {
-                            Log.d("E","in while loop");
-                            ServerSocket myserversocket = null;
-                            try {
-                                myserversocket = new ServerSocket(0);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            Log.d("E", "#fares Created socket");
-
-                            s = String.valueOf(myserversocket.getLocalPort());
-                            MainActivity.this.changeText(MainActivity.this.editText,s);
-                            try {
-                                myserversocket.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-
-
+                    s = String.valueOf(myserversocket.getLocalPort());
+                    MainActivity.this.updateListView(s);
+                    try {
+                        myserversocket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
 
             } catch (Exception e) {
@@ -93,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
-
-
     }
 }
 
