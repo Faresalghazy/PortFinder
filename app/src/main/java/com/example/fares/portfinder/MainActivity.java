@@ -1,5 +1,7 @@
 package com.example.fares.portfinder;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,9 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -20,7 +23,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public EditText editText;
+    private TextView textView;
     private ArrayList<String> ports = new ArrayList<>();
     private ListView listView;
     private ListAdapter adapter;
@@ -30,16 +33,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        textView = (TextView) findViewById(R.id.text_view);
         listView = (ListView) findViewById(R.id.list_view);
+
         adapter = new PortListAdapter(MainActivity.this, ports);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                String item = ports.get(i);
+
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("copy port", item);
+                clipboard.setPrimaryClip(clip);
+
+                Toast.makeText(MainActivity.this, "port '" + item + "' copied", Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
 
     private void updateListView(final String value) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(value)) {
+                    textView.setText(value);
                     ports.add(0, value);
                     listView.setAdapter(adapter);
                 }
@@ -62,8 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class MySocket extends AsyncTask<Void, Void, Void> {
-
+    private class MySocket extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -91,11 +110,8 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-
-
             } catch (Exception e) {
                 Log.d("E", e.getMessage());
-
                 Log.d("E", "doinbackground exception");
             }
             return null;

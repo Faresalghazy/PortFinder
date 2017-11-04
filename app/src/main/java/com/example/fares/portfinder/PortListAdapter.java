@@ -14,9 +14,11 @@ public class PortListAdapter extends BaseAdapter {
 
     private ArrayList<String> ports;
     private LayoutInflater layoutInflater;
+    private Context context;
 
     public PortListAdapter(Context context, ArrayList<String> ports) {
         this.ports = ports;
+        this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -39,7 +41,6 @@ public class PortListAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
 
         view = layoutInflater.inflate(R.layout.list_view_item, null);
-
         TextView tv = view.findViewById(R.id.tv_port_number);
 
         tv.setText(ports.get(i));
