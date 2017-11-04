@@ -14,11 +14,10 @@ public class PortListAdapter extends BaseAdapter {
 
     private ArrayList<String> ports;
     private LayoutInflater layoutInflater;
-    private Context context;
+
 
     public PortListAdapter(Context context, ArrayList<String> ports) {
         this.ports = ports;
-        this.context = context;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
